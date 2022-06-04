@@ -851,7 +851,11 @@ def _base_struct_hook_factory(cl):
     def _structure_base(obj, t):
         """Instantiate a subclass of Base class from a mapping (dict)."""
 
-        conv_obj = {"id": ""}
+        if "id" in [f.name for f in attr.fields(t)]:
+            conv_obj = {"id": ""}
+        else:
+            conv_obj = {}
+
         for a in fields(cl):  # type: ignore
             name = a.name
 
@@ -927,7 +931,7 @@ converter.register_unstructure_hook_factory(
 
 converter.register_structure_hook_factory(_is_list_base, _structure_list_base)
 converter.register_structure_hook_factory(
-    lambda cl: issubclass(cl, Base) and "id" in [a.name for a in fields(cl)],
+    lambda cl: issubclass(cl, Base),
     _base_struct_hook_factory,
 )
 
